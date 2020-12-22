@@ -2,6 +2,8 @@ import React from "react";
 
 import { useAuth0, withAuthenticationRequired } from "@auth0/auth0-react";
 import { Loading } from "../components";
+// import { Button } from 'react-native';
+
 
 const Profile = () => {
   const { user } = useAuth0();
@@ -20,6 +22,20 @@ const Profile = () => {
         <div className="col-md text-center text-md-left">
           <h2>{name}</h2>
           <p className="lead text-muted">{email}</p>
+        </div>
+
+        <div className="col-md text-center text-md-left">
+        <button className="btn btn-danger btn-block"
+
+            title="Learn More"
+            color="#841584"
+            accessibilityLabel="Learn more about this purple button"
+          >
+
+            Edit Details
+            </button>
+
+
         </div>
       </div>
       <div className="row">
