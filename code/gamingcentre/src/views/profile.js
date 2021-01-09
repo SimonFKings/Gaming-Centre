@@ -2,8 +2,7 @@ import React from "react";
 
 import { useAuth0, withAuthenticationRequired } from "@auth0/auth0-react";
 import { Loading } from "../components";
-// import { Button } from 'react-native';
-
+import { Link } from 'react-router-dom';
 
 const Profile = () => {
   const { user } = useAuth0();
@@ -24,19 +23,9 @@ const Profile = () => {
           <p className="lead text-muted">{email}</p>
         </div>
 
-        <div className="col-md text-center text-md-left">
-        <button className="btn btn-danger btn-block"
+    
+        <Link to ="/edit-profile">Edit Profile</Link>
 
-            title="Learn More"
-            color="#841584"
-            accessibilityLabel="Learn more about this purple button"
-          >
-
-            Edit Details
-            </button>
-
-
-        </div>
       </div>
       <div className="row">
         <pre className="col-12 text-light bg-dark p-4">
