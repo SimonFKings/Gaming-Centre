@@ -9,7 +9,7 @@ const ExternalApi = () => {
 
   const callApi = async () => {
     try {
-      const response = await fetch(`${serverUrl}/api/messages/public-message`);
+      const response = await fetch(`https://dev-22x3u4l0.us.auth0.com/api/v2/users/google-oauth2%7C107476463422329654527`);
 
       const responseData = await response.json();
 
@@ -18,21 +18,33 @@ const ExternalApi = () => {
       setMessage(error.message);
     }
   };
+  const proxyurl = "https://cors-anywhere.herokuapp.com/";
 
   const callSecureApi = async () => {
     try {
       const token = await getAccessTokenSilently();
+      console.log('response');
 
       const response = await fetch(
-        `${serverUrl}/api/messages/protected-message`,
-        {
+        proxyurl+ `https://dev-22x3u4l0.us.auth0.com/api/v2/users/google-oauth2|107476463422329654527`,
+        
+        {    
+          // mode: "no-cors",
+
           headers: {
             Authorization: `Bearer ${token}`,
+            'Access-Control-Allow-Origin' : '*',
+
+            
           },
         }
       );
+        console.log(response)
+        console.log('responseData');
 
       const responseData = await response.json();
+
+      console.log(responseData)
 
       setMessage(responseData.message);
     } catch (error) {
