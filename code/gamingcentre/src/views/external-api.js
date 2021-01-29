@@ -23,17 +23,17 @@ const ExternalApi = () => {
   const callSecureApi = async () => {
     try {
       const token = await getAccessTokenSilently();
-      console.log('response');
 
       const response = await fetch(
-        proxyurl+ `https://dev-22x3u4l0.us.auth0.com/api/v2/users/google-oauth2|107476463422329654527`,
+        // proxyurl+
+         `https://dev-22x3u4l0.us.auth0.com/api/v2/users/google-oauth2|107476463422329654527`,
         
         {    
           // mode: "no-cors",
 
           headers: {
             Authorization: `Bearer ${token}`,
-            'Access-Control-Allow-Origin' : '*',
+            // 'Access-Control-Allow-Origin' : '*',
 
             
           },
