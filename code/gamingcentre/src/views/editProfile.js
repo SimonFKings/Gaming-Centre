@@ -19,7 +19,6 @@ const EditProfile = () => {
 
   useEffect(() => {
     const getUserMetadata = async () => {
-      const domain = "YOUR_DOMAIN";
 
       try {
         const token = await getAccessTokenSilently();
