@@ -44,7 +44,6 @@ const EditProfile = () => {
           setLastName(responseData.user_metadata.lastName)
           setUsername(responseData.user_metadata.username)
           setEmail(responseData.user_metadata.emailAddress)
-
           
       } catch (e) {
         console.log(e.message);

@@ -43,7 +43,8 @@ const Home = () => {
                
              },
              body:
-             'fields name; limit 10;'
+             'fields name, cover; limit 10;'
+          //  'fields url;'
 
            }
            );
@@ -67,6 +68,8 @@ const Home = () => {
   <Fragment>
     <Hero />
     <hr />
+  <div>
+  </div>
     <HomeContent />
   </Fragment>
 

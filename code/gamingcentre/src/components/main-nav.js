@@ -12,6 +12,14 @@ const MainNav = () => (
       Home
     </NavLink>
     <NavLink
+      to="/games"
+      exact
+      className="nav-link"
+      activeClassName="router-link-exact-active"
+    >
+      Games
+    </NavLink>
+    <NavLink
       to="/profile"
       exact
       className="nav-link"
