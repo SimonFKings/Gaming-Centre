@@ -46,7 +46,7 @@ useEffect(()  => {
              
            },
            body:
-           'fields name, cover, summary, total_rating, follows; where follows > 1 & total_rating > 0.0 ;limit 9;sort follows desc;'
+           'fields name, cover, summary, total_rating, follows; where follows > 1 ;limit 9;sort follows desc;'
 
          }
          );
@@ -89,7 +89,7 @@ fetch(
            
          },
          body:
-   'fields name, cover, summary, total_rating, follows; where follows > 1 & total_rating > 0.1 ;search "' + searchTerm + '";'
+   'fields name, cover, summary, total_rating, follows;  ;search "' + searchTerm + '";'
 
  }
 

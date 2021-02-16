@@ -89,7 +89,7 @@ const [ image , setImage] = useState("");
 }, []);
 
   return  <div className='game'> 
-    <img src={image} alt={name} />
+    <img src={image ? image: 'https://images.unsplash.com/photo-1573053986275-840ffc7cc685?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=934&q=80'} alt={name} />
 
 <div className="game-info">
 <h3> {name} </h3>
