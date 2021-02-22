@@ -13,6 +13,8 @@ const [ searchTerm , setSearchTerm] = useState('');
 
 
 useEffect(()  => {
+  let isMounted = true; // note this flag denote mount status
+
   const getGames = async () => {
 
     try {
@@ -26,12 +28,13 @@ useEffect(()  => {
         }
         );
 
+        if(isMounted){
         const responseData = await response.json();
       
         const token = responseData.access_token;
         const proxyurl = "https://cors-anywhere.herokuapp.com/";
-
         const response2 = await fetch(
+
          proxyurl+
           `https://api.igdb.com/v4/games`,
          
@@ -50,16 +53,21 @@ useEffect(()  => {
 
          }
          );
+
          const responseData2 = await response2.json();
-       console.log(responseData2)
          setGames(responseData2)
+         console.log(responseData2)
+
+         }
 
     } catch (e) {
       console.log(e.message);
     }
    
   };
+  
   getGames();
+  return () => { isMounted = false };
 }, []);
 
 const handleOnSubmit = (e)=>{
@@ -76,7 +84,6 @@ fetch(`https://id.twitch.tv/oauth2/token?client_id=ozi5hp5ssdlwirs85n2deu5f4rtnm
   const token = data.access_token
   const proxyurl = "https://cors-anywhere.herokuapp.com/";
 
-  console.log(token)
 fetch(
   proxyurl + `https://api.igdb.com/v4/games`,
   {
@@ -114,7 +121,7 @@ const handleOnChange = (e)=>{
 
 
   return (<>
-    <header>
+    {<header>
       <form onSubmit={handleOnSubmit}>
         
       <input className="search"
@@ -126,7 +133,7 @@ const handleOnChange = (e)=>{
 
       </form>
 
-  </header>
+  </header> }
 
 <div className="game-cotainer">
  

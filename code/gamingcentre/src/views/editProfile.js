@@ -14,7 +14,7 @@ const EditProfile = () => {
   const [emailAddress, setEmail] = useState("");
 
 
-  const {name, picture, email, given_name, family_name, nickname, sub} = user;
+  const {name, sub} = user;
 
 
   useEffect(() => {
@@ -24,15 +24,12 @@ const EditProfile = () => {
         const token = await getAccessTokenSilently();
 
         const response = await fetch(
-          // proxyurl+
            `https://dev-22x3u4l0.us.auth0.com/api/v2/users/google-oauth2|107476463422329654527`,
           
           {    
-            // mode: "no-cors",
   
             headers: {
               Authorization: `Bearer ${token}`,
-              // 'Access-Control-Allow-Origin' : '*',
   
               
             },
@@ -53,7 +50,6 @@ const EditProfile = () => {
   }, []);
 
 
-  const proxyurl = "https://cors-anywhere.herokuapp.com/";
 
   const { getAccessTokenSilently } = useAuth0();
 
