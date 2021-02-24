@@ -56,7 +56,6 @@ useEffect(()  => {
 
          const responseData2 = await response2.json();
          setGames(responseData2)
-         console.log(responseData2)
 
          }
 
@@ -104,6 +103,7 @@ fetch(
   
 ).then((response) => response.json())
 .then((data) => {
+  console.log(data)
   setGames(data)
 })
 
