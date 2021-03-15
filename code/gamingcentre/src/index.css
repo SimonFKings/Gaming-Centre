@@ -183,3 +183,40 @@ header {
   color: #ffffff;
   transition: all 0.3s ease-in-out;
 }
+.createPostUpload > input {
+  display: none;
+}
+.createPost {
+  background-color: lightgrey;
+  width: 100%;
+  max-width: 650px;
+  border-radius: 4px;
+  padding: 12px 16px;
+}
+.uploadButton {
+  border: none;
+  background-color: lightgrey;
+}
+
+.createPostBottom {
+  display: flex;
+  justify-content: space-between;
+}
+
+.createPostTextArea {
+  border: none;
+  width: 100%;
+  background-color: lightgrey;
+  outline: none;
+  font-size: 14px;
+  margin-top: 6px;
+}
+.createPostTextArea :focus {
+  outline: none;
+}
+#file-preview {
+  display: none;
+  height: 140px;
+  margin: 12px;
+  border-radius: 4px;
+}

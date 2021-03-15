@@ -199,7 +199,6 @@ setPlatforms(data)
    ).then((response) => response.json())
    .then((data) => {
 
-console.log(data[0].video_id)  
 setVideo(data[0].video_id)
 })
 
@@ -226,7 +225,6 @@ fetch(
    ).then((response) => response.json())
    .then((data) => {
 
-console.log(data[0].url)  
 setArtwork(data[0].url.replace("thumb", "1080p"))
 })
 
@@ -450,46 +448,6 @@ return (
       </div> 
     </div>
        
-/* <Container>
-<Row>
-        <Col xs="6"> 
-        <div className='game'> 
-        
-        <img src={image ? image: 'https://images.unsplash.com/photo-1573053986275-840ffc7cc685?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=934&q=80'} alt={name} />
-
-      </div>
-      </Col>
-        <Col xs="6"> 
-        <h1>
-            {name}
-        </h1>
-        <span>
-            {summary}
-
-      
-        </span>
-        <Row>
-
-
-       <h5>Genres: </h5>{genres.length > 0 && genres.map((genre) => (
-            <h6 key = {genre.id}>{genre.name + ", "}</h6>
-        ))}
-        </Row>
-        <Row>
-
-
-<h5>Platforms: </h5>{platforms.length > 0 && platforms.map((platform) => (
-     <h6 key = {platform.id}>{platform.name + ", "}</h6>
- ))}
- </Row>
- <h5>Critics:</h5>
-        <span> {criticRatings}  out of {criticCount} ratings</span>
-        </Col>
-      </Row>
-</Container> */
-
-
-
 
 
   );
