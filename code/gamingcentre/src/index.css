@@ -220,3 +220,54 @@ header {
   margin: 12px;
   border-radius: 4px;
 }
+.post {
+  background-color: lightgray;
+  max-width: 600px;
+  width: 90vw;
+  padding: 16px;
+}
+.postHeader {
+  display: flex;
+}
+.postProfileImage {
+  height: 35px;
+  border-radius: 8px;
+}
+.feed {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.mainPost {
+  display: flex;
+}
+.fileURL {
+  width: 100%;
+  /* margin: 0px 0px;
+  object-fit: cover; */
+}
+.commentInput {
+  display: flex;
+  justify-content: space-between;
+}
+.commentInputTextArea {
+  border: none;
+  width: 100%;
+  resize: none;
+  margin: 8px 0px;
+  background-color: lightgray;
+}
+
+.commentInputTextArea:focus {
+  outline: none;
+}
+
+.commentInputButton {
+  background-color: lightgray;
+  border: none;
+}
+
+.commentInputButton:focus {
+  outline: none;
+}

@@ -62,7 +62,12 @@ const handleUpload = () => {
               });
             });
 
+        setPostText("");
+        setProgress(0);
+        setFile(null);
 
+        var preview = document.getElementById("file-preview");
+        preview.style.display = "none";
           
         }
         
@@ -105,7 +110,9 @@ const handleUpload = () => {
     )
 
 };
-//Show button if a file has been uploaded
+//Show upload button if a file has been uploaded
 //Maybe a problem if users upload same name for images
+//File names say jpg
+//Replace the examples delete button with a timestamp
 
 export default CreatePost;
