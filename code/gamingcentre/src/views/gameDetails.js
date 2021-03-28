@@ -7,6 +7,7 @@ import { Container, Row, Col } from 'reactstrap';
 import { Modal } from "react-bootstrap";
 import ReactPlayer from "react-player";
 import ReactStars from "react-rating-stars-component";
+import Switch from "react-switch";
 
 
 
@@ -15,7 +16,7 @@ const GameDetails = (props) => {
 
     
     
-    const [ name , setName] = useState([]);
+    const [ gameName , setGameName] = useState([]);
     const [ summary , setSummary] = useState([]);
     const [ criticRatings , setCriticRating] = useState([]);
     const [ criticCount , setCriticCount] = useState([]);
@@ -25,13 +26,82 @@ const GameDetails = (props) => {
     const [ video , setVideo] = useState([]);
     const [isOpen, setIsOpen] = useState(false);
     const [artwork, setArtwork] = useState([]);
+    const [checked, setChecked] = useState(false);
+    const [myGames, setMyGames] = useState([]);
+
+
+    const { user } = useAuth0();
+    const { name, picture, email, sub } = user;
+  
+    const { getAccessTokenSilently } = useAuth0();
+
+    const handleChange = () =>{
+      console.log(checked)
+
+      const updateGames = async () => {
+        console.log(checked)
+
+      if(checked){
+        console.log(myGames);
+
+        const index = myGames.indexOf(id)
+        
+        if(index !== -1){
+          console.log("help")
+          myGames.splice(index, 1);
+          setChecked(false);
+          
+
+        }
+
+        
+      }else{
+        if(!myGames.includes(id)){
+        myGames.push(id);
+        console.log(myGames);
+        setChecked(true)
+        try {
+          const token = await getAccessTokenSilently();
+    
+    
+          const response = await fetch(
+            `https://dev-22x3u4l0.us.auth0.com/api/v2/users/` + sub ,
+            {    
+              method: 'PATCH',
+              headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json'
+    
+          
+    
+              },
+              body: JSON.stringify( { "user_metadata": {
+                "games" : myGames, 
+              
+    
+            }})
+              
+    
+            }
+          );
+    
+    
+    
+    
+          const responseData = await response.json();
+    console.log(responseData)
+        } catch (error) {
+        }
+      }
+      };
+        
+      }
+      updateGames();
 
 
 
-
-
-
-
+    }
+  
 
 
 
@@ -39,8 +109,10 @@ const GameDetails = (props) => {
 
 
     let { id } = useParams();
-
     useEffect(() => {
+
+
+      
 
     fetch(`https://id.twitch.tv/oauth2/token?client_id=ozi5hp5ssdlwirs85n2deu5f4rtnm0&client_secret=4fg8qly9eqv7kwu9pib34ydk31zxf0&grant_type=client_credentials`,      
 {    
@@ -84,7 +156,7 @@ fetch(
 
 
 
-setName(game.name)
+setGameName(game.name)
 setSummary(game.summary)
 setCriticRating(game.aggregated_rating);
 setCriticCount(game.aggregated_rating_count	)
@@ -228,6 +300,43 @@ fetch(
 setArtwork(data[0].url.replace("thumb", "1080p"))
 })
 
+const getUserMetadata = async () => {
+
+  try {
+    const token = await getAccessTokenSilently();
+
+    const response = await fetch(
+       `https://dev-22x3u4l0.us.auth0.com/api/v2/users/` + sub,
+      {    
+        headers: {
+          Authorization: `Bearer ${token}`,          
+        },
+      }
+      );
+
+      const responseData = await response.json();
+
+      const gamesArray = responseData.user_metadata.games
+
+      setMyGames(gamesArray);
+
+      if(gamesArray.includes(id)){
+        setChecked(true)
+        console.log("Setting to true")
+      }else{
+        setChecked(false)
+        console.log("Setting to false")
+
+      }
+     
+     
+      
+  } catch (e) {
+    console.log(e.message);
+  }
+};
+getUserMetadata();
+
 })
 
 })
@@ -246,7 +355,7 @@ const MoviePalyerModal = (props) => {
             id="contained-modal-title-vcenter"
             style={{ color: "#000000", fontWeight: "bolder" }}
           >
-            {name}
+            {gameName}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body style={{ backgroundColor: "#000000" }}>
@@ -292,7 +401,7 @@ return (
           <img
             className="img-fluid"
             src={artwork}
-            alt={name}
+            alt={gameName}
           ></img>
 </div>
           <div className="carousel-center">
@@ -306,15 +415,22 @@ return (
             className="carousel-caption"
             style={{ textAlign: "center", fontSize: 35}}
           >
-            {name}
+            {gameName}
           </div>
         </div>
       </div>
+
 
     <div className="row mt-3">
         <div className="col">
           <p style={{ color: "#5a606b", fontWeight: "bolder" }}>GENRE</p>
         </div>
+
+        <div className="col">
+        <p style={{ color: "#5a606b", fontWeight: "bolder" }}>MY GAMES</p>
+        <Switch onChange={handleChange} checked={checked} />
+        </div>
+
       </div>
 
       <div className="row mt-3">

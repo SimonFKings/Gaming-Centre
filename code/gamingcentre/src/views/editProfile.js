@@ -24,7 +24,7 @@ const EditProfile = () => {
         const token = await getAccessTokenSilently();
 
         const response = await fetch(
-           `https://dev-22x3u4l0.us.auth0.com/api/v2/users/google-oauth2|107476463422329654527`,
+           `https://dev-22x3u4l0.us.auth0.com/api/v2/users/` + sub,
           
           {    
   
@@ -101,7 +101,7 @@ console.log(responseData)
 
     <div>
 
-                <h2>{name}</h2>
+                <h2>{firstName} {lastName}</h2>
 <label>
            <p>First Name</p>
            <input name="name" value={firstName}
