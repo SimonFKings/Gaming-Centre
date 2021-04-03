@@ -34,7 +34,7 @@ return(
         </div>
 
         {comments ? (comments.map((comment) => (
-        <Comment username={comment.username} text = {comment.comment}/>
+        <Comment key={comment.id }  username={comment.username} text = {comment.comment}/>
             )) 
             ): (
             <></>

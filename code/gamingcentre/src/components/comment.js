@@ -1,7 +1,7 @@
 import React, { useContext, useState }  from "react";
 import Post from "../components/post" 
 
-const Comment = ({username, text}) => {
+const Comment = ({id , username, text}) => {
 
 return(
     <div className="comment">
