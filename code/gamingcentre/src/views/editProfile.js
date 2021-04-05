@@ -14,7 +14,7 @@ const EditProfile = () => {
   const [emailAddress, setEmail] = useState("");
 
 
-  const {name, sub} = user;
+  const {sub, given_name, family_name, nickname, email} = user;
 
 
   useEffect(() => {
@@ -37,13 +37,15 @@ const EditProfile = () => {
           );
 
           const responseData = await response.json();
-          setFirstName(responseData.user_metadata.firstName)
-          setLastName(responseData.user_metadata.lastName)
-          setUsername(responseData.user_metadata.username)
-          setEmail(responseData.user_metadata.emailAddress)
+          setFirstName(responseData.user_metadata && responseData.user_metadata.firstName ? responseData.user_metadata.firstName : given_name)
+          setLastName(responseData.user_metadata && responseData.user_metadata.lastName ? responseData.user_metadata.lastName : family_name)
+          setUsername(responseData.user_metadata && responseData.user_metadata.username ? responseData.user_metadata.username  : nickname)
+          setEmail(responseData.user_metadata && responseData.user_metadata.emailAddress  ? responseData.user_metadata.emailAddress : email)
+         
           
       } catch (e) {
         console.log(e.message);
+
       }
     };
     getUserMetadata();
