@@ -49,13 +49,14 @@ useEffect(()  => {
              
            },
            body:
-           'fields name, cover, summary, total_rating, follows; where follows > 1 ;limit 9;sort follows desc;'
+           'fields name, cover, summary, total_rating, follows, similar_games	; where follows > 1 ;limit 9;sort follows desc;'
 
          }
          );
 
          const responseData2 = await response2.json();
          setGames(responseData2)
+         console.log(responseData2)
 
          }
 

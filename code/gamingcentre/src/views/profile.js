@@ -35,6 +35,7 @@ let username = "";
 
       try {
         const token = await getAccessTokenSilently();
+        console.log(token)
   
         const response = await fetch(
            `https://dev-22x3u4l0.us.auth0.com/api/v2/users/` + sub,
@@ -101,7 +102,7 @@ let username = "";
      db.collection("posts").where(`userName`,`==`, username ).onSnapshot((snapshot) =>
       {
         // const a = snapshot.docs.map((doc) => ({id: doc.id, post:doc.data()}));
-        console.log(username);
+        // console.log(username);
 
         setPosts( snapshot.docs.map((doc) => ({id: doc.id, post:doc.data()})));
 
@@ -146,9 +147,9 @@ let username = "";
       <div className="row">
       <h2>My Games</h2>
 
-        { <pre className="col-12 text-light bg-dark p-4">
+        {/* { <pre className="col-12 text-light bg-dark p-4">
           {JSON.stringify(user, null, 2)}
-        </pre> }
+        </pre> } */}
 
         <div className="game-cotainer">
  

@@ -8,6 +8,7 @@ import { Modal } from "react-bootstrap";
 import ReactPlayer from "react-player";
 import ReactStars from "react-rating-stars-component";
 import Switch from "react-switch";
+import { db } from "../firebase";
 
 
 
@@ -28,6 +29,8 @@ const GameDetails = (props) => {
     const [artwork, setArtwork] = useState([]);
     const [checked, setChecked] = useState(false);
     const [myGames, setMyGames] = useState([]);
+    const [rating, setRating] = useState(0);
+
 
 
     const { user } = useAuth0();
@@ -39,7 +42,35 @@ const GameDetails = (props) => {
       console.log(checked)
 
       const updateGames = async () => {
-        console.log(checked)
+
+        try {
+          const token = await getAccessTokenSilently();
+  
+          const response = await fetch(
+             `https://dev-22x3u4l0.us.auth0.com/api/v2/users/` + sub,
+            
+            {    
+    
+              headers: {
+                Authorization: `Bearer ${token}`,
+    
+                
+              },
+            }
+            );
+  
+            const responseData = await response.json();
+            if(responseData.user_metadata && responseData.user_metadata.games){
+              setMyGames(responseData.user_metadata.games)
+            }
+           
+           
+            
+        } catch (e) {
+          console.log(e.message);
+  
+        }
+
 
       if(checked){
         console.log(myGames);
@@ -47,7 +78,6 @@ const GameDetails = (props) => {
         const index = myGames.indexOf(id)
         
         if(index !== -1){
-          console.log("help")
           myGames.splice(index, 1);
           setChecked(false);
           
@@ -56,10 +86,16 @@ const GameDetails = (props) => {
 
         
       }else{
+
+
+        if(myGames){
         if(!myGames.includes(id)){
         myGames.push(id);
-        console.log(myGames);
         setChecked(true)
+        }else{
+          myGames.push(id);
+          setChecked(true)
+        }
         try {
           const token = await getAccessTokenSilently();
     
@@ -102,7 +138,67 @@ const GameDetails = (props) => {
 
     }
   
+    const changeRating = (newRating) =>{
 
+//       var jobskill_ref = db.collection('job_skills').where('job_id','==',post.job_id);
+// let batch = firestore.batch();
+
+// jobskill_ref
+//   .get()
+//   .then(snapshot => {
+//     snapshot.docs.forEach(doc => {
+//       batch.delete(doc.ref);
+//     });
+//     return batch.commit();
+//   })
+
+  // let all = db.collection("reviews").where(`gameID`,`==`, id).where(`user`, `==`, sub);
+
+  // let batch = db.batch();
+
+  // all.get().then(snapshot => {
+  //   snapshot.docs.forEach(doc =>{
+  //     console.log(doc.ref)
+  //     batch.delete(doc.ref)
+  //   });
+  //   return batch.commit();
+  // });
+
+  let docs =  db.collection("reviews").where(`gameID`,`==`, id).where(`user`, `==`, sub);
+
+   
+      
+      docs.get().then(querySnapshot => {
+        if(querySnapshot.size === 0 ){
+
+          db.collection("reviews").add({
+            gameID : id,
+            rating :  newRating,
+            user : sub
+          });
+
+          
+        }else{
+        querySnapshot.forEach(doc => {
+          doc.ref.update({
+            rating :  newRating,
+
+          })
+        });
+      }
+      });
+   
+
+      // db.collection("reviews").onSnapshot((snapshot) =>
+      // {
+  
+      //  console.log(snapshot.docs.map((doc) => (doc.data())))
+      // })
+  
+   
+
+   
+    }
 
 
 
@@ -111,7 +207,12 @@ const GameDetails = (props) => {
     let { id } = useParams();
     useEffect(() => {
 
+      db.collection("reviews").where(`gameID`,`==`, id).where(`user`, `==`, sub).onSnapshot((snapshot) =>{
 
+        setRating(snapshot.docs[0].data().rating);
+        
+        });
+      
       
 
     fetch(`https://id.twitch.tv/oauth2/token?client_id=ozi5hp5ssdlwirs85n2deu5f4rtnm0&client_secret=4fg8qly9eqv7kwu9pib34ydk31zxf0&grant_type=client_credentials`,      
@@ -317,7 +418,7 @@ const getUserMetadata = async () => {
       const responseData = await response.json();
 
       const gamesArray = responseData.user_metadata.games
-
+      if(gamesArray){
       setMyGames(gamesArray);
 
       if(gamesArray.includes(id)){
@@ -329,7 +430,7 @@ const getUserMetadata = async () => {
 
       }
      
-     
+    }
       
   } catch (e) {
     console.log(e.message);
@@ -340,6 +441,12 @@ getUserMetadata();
 })
 
 })
+
+
+
+
+
+
 }, []);
 const MoviePalyerModal = (props) => {
     const youtubeUrl = "https://www.youtube.com/watch?v=";
@@ -442,10 +549,13 @@ return (
       <div className="row mt-3">
         <div className="col">
           <div className="text-center">
+            {rating}
             <ReactStars
-              number={criticRatings}
+              count={5}
+              value={rating}
               size={20}
               color1={"#f4c10f"}
+              onChange = {changeRating}
             ></ReactStars>
           </div>
           <div className="mt-3">
