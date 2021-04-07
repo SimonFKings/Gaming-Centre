@@ -7,8 +7,11 @@ import { Container, Row, Col } from 'reactstrap';
 import { Modal } from "react-bootstrap";
 import ReactPlayer from "react-player";
 import ReactStars from "react-rating-stars-component";
+import StarRatings from 'react-star-ratings';
+
 import Switch from "react-switch";
 import { db } from "../firebase";
+
 
 
 
@@ -165,9 +168,6 @@ const GameDetails = (props) => {
   // });
 
   let docs =  db.collection("reviews").where(`gameID`,`==`, id).where(`user`, `==`, sub);
-
-   
-      
       docs.get().then(querySnapshot => {
         if(querySnapshot.size === 0 ){
 
@@ -209,7 +209,7 @@ const GameDetails = (props) => {
 
       db.collection("reviews").where(`gameID`,`==`, id).where(`user`, `==`, sub).onSnapshot((snapshot) =>{
 
-        setRating(snapshot.docs[0].data().rating);
+        setRating(snapshot.docs.length>0 ? snapshot.docs[0].data().rating : 0);
         
         });
       
@@ -531,33 +531,49 @@ return (
     <div className="row mt-3">
         <div className="col">
           <p style={{ color: "#5a606b", fontWeight: "bolder" }}>GENRE</p>
+          <div className="row mt-3">
+        <div className="col">
+          <ul className="list-inline">{genresList}</ul>
+        </div>
+      </div>
         </div>
 
         <div className="col">
         <p style={{ color: "#5a606b", fontWeight: "bolder" }}>MY GAMES</p>
         <Switch onChange={handleChange} checked={checked} />
         </div>
-
+        
+        
       </div>
 
-      <div className="row mt-3">
-        <div className="col">
-          <ul className="list-inline">{genresList}</ul>
-        </div>
-      </div>
+      <div className="col">
 
       <div className="row mt-3">
-        <div className="col">
-          <div className="text-center">
-            {rating}
-            <ReactStars
+        
+      <p style={{ color: "#5a606b", fontWeight: "bolder" }}>MY RATING</p>
+      <div className="row mt-3">
+
+            {/* <ReactStars
               count={5}
               value={rating}
               size={20}
               color1={"#f4c10f"}
               onChange = {changeRating}
-            ></ReactStars>
+            ></ReactStars> */}
+
+            <StarRatings
+            rating ={rating}
+            changeRating= {changeRating}
+            starRatedColor	= {"purple"}
+          
+            />
           </div>
+          </div>
+
+      </div>
+
+      <div className="row mt-3">
+        <div className="col">
           <div className="mt-3">
             <p style={{ color: "#5a606b", fontWeight: "bolder" }}>SUMMARY</p>
             {summary}
