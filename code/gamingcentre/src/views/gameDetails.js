@@ -143,29 +143,6 @@ const GameDetails = (props) => {
   
     const changeRating = (newRating) =>{
 
-//       var jobskill_ref = db.collection('job_skills').where('job_id','==',post.job_id);
-// let batch = firestore.batch();
-
-// jobskill_ref
-//   .get()
-//   .then(snapshot => {
-//     snapshot.docs.forEach(doc => {
-//       batch.delete(doc.ref);
-//     });
-//     return batch.commit();
-//   })
-
-  // let all = db.collection("reviews").where(`gameID`,`==`, id).where(`user`, `==`, sub);
-
-  // let batch = db.batch();
-
-  // all.get().then(snapshot => {
-  //   snapshot.docs.forEach(doc =>{
-  //     console.log(doc.ref)
-  //     batch.delete(doc.ref)
-  //   });
-  //   return batch.commit();
-  // });
 
   let docs =  db.collection("reviews").where(`gameID`,`==`, id).where(`user`, `==`, sub);
       docs.get().then(querySnapshot => {
@@ -187,18 +164,114 @@ const GameDetails = (props) => {
         });
       }
       });
-   
-
-      // db.collection("reviews").onSnapshot((snapshot) =>
-      // {
-  
-      //  console.log(snapshot.docs.map((doc) => (doc.data())))
-      // })
-  
-   
-
-   
+      
     }
+   
+
+
+
+
+
+    const euclideanDistance = (user, user2)=> {
+
+      //This is going to be somewhere else
+
+      const users = [];
+      const movies = [];
+      db.collection("reviews").onSnapshot((snapshot) => {
+        snapshot.docs.map((doc) =>{
+          if(!users.includes(doc.data().user)){
+          users.push(doc.data().user);
+          }
+
+          if(!movies.includes(doc.data().gameID)){
+            movies.push(doc.data().gameID);
+          }
+
+          
+
+
+        }
+        )
+
+        
+
+
+      });
+
+      var sumSquares = 0;
+
+      for (let i = 0; i < movies.length; i++) {
+        let movie = movies[i];
+        
+        let docs =  db.collection("reviews").where(`gameID`,`==`, movie).where(`user`, `==`, user);
+
+        let docs2 =  db.collection("reviews").where(`gameID`,`==`, movie).where(`user`, `==`, user2);
+
+        let rating1 = null;
+        let rating2 = null;
+        docs.get().then(querySnapshot => {
+          if(querySnapshot.size>0){
+            querySnapshot.forEach(doc => {
+              rating1 = doc.data().rating;
+            });
+          }
+        })
+
+        docs2.get().then(querySnapshot => {
+          if(querySnapshot.size>0){
+            querySnapshot.forEach(doc => {
+              rating2 = doc.data().rating;
+            });
+          }
+        })
+
+        if (rating1 != null && rating2 != null) {
+          var diff = rating1 - rating2;
+          sumSquares += diff * diff;
+        }
+
+
+      }
+
+      var d = Math.sqrt(sumSquares);
+
+      var similarity = 1 / (1 + d);
+      return similarity;
+        
+      
+
+
+
+
+console.log(users)
+console.log(movies)
+
+
+
+
+    }
+
+    // const euclideanDistance2 = (ratings1, ratings2)=> {
+    //   var titles = data.titles;
+    
+    //   var sumSquares = 0;
+    //   for (var i = 0; i < titles.length; i++) {
+    //     var title = titles[i];
+    //     var rating1 = ratings1[title];
+    //     var rating2 = ratings2[title];
+    //     if (rating1 != null && rating2 != null) {
+    //       var diff = rating1 - rating2;
+    //       sumSquares += diff * diff;
+    //     }
+    //   }
+    //   var d = sqrt(sumSquares);
+    
+    //   var similarity = 1 / (1 + d);
+    //   return similarity;
+    // }
+
+    
 
 
 
@@ -206,6 +279,7 @@ const GameDetails = (props) => {
 
     let { id } = useParams();
     useEffect(() => {
+      euclideanDistance();
 
       db.collection("reviews").where(`gameID`,`==`, id).where(`user`, `==`, sub).onSnapshot((snapshot) =>{
 
