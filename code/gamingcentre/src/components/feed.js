@@ -12,6 +12,7 @@ const [post, setPosts ] = useState([]);
 
         setPosts(snapshot.docs.map((doc) => ({id: doc.id, post:doc.data()})));
     })
+    console.log(post[0])
     }, [])
 
 return(

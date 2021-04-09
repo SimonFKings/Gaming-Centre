@@ -34,6 +34,11 @@ const GameDetails = (props) => {
     const [myGames, setMyGames] = useState([]);
     const [rating, setRating] = useState(0);
 
+    const [users, setUsers] = useState([])
+    const [games, setGames] = useState([])
+
+    const [prediction, setPrediction] = useState(0)
+
 
 
     const { user } = useAuth0();
@@ -42,7 +47,7 @@ const GameDetails = (props) => {
     const { getAccessTokenSilently } = useAuth0();
 
     const handleChange = () =>{
-      console.log(checked)
+      // console.log(checked)
 
       const updateGames = async () => {
 
@@ -76,7 +81,7 @@ const GameDetails = (props) => {
 
 
       if(checked){
-        console.log(myGames);
+        // console.log(myGames);
 
         const index = myGames.indexOf(id)
         
@@ -145,6 +150,8 @@ const GameDetails = (props) => {
 
 
   let docs =  db.collection("reviews").where(`gameID`,`==`, id).where(`user`, `==`, sub);
+  console.log(docs)
+
       docs.get().then(querySnapshot => {
         if(querySnapshot.size === 0 ){
 
@@ -168,65 +175,147 @@ const GameDetails = (props) => {
     }
    
 
+    const findNearestNeighbors = (user) =>{
 
+      var similarityScores = {};
 
+    for (let i = 0; i < users.length; i++) {
+      let other = users[i];
+      if(other != user){
+        const similarity = euclideanDistance(user, other)
+        // console.log(similarity)
 
+        similarityScores[other] = similarity;
+      }
+    }
+    // console.log(similarityScores)
 
-    const euclideanDistance = (user, user2)=> {
+      users.sort(compareSimilarity);
 
-      //This is going to be somewhere else
+      function compareSimilarity(a, b) {
+        var score1 = similarityScores[a];
+        var score2 = similarityScores[b];
+        return score2 - score1;
+      }
 
-      const users = [];
-      const movies = [];
-      db.collection("reviews").onSnapshot((snapshot) => {
-        snapshot.docs.map((doc) =>{
-          if(!users.includes(doc.data().user)){
-          users.push(doc.data().user);
-          }
+      var k = 5;
+        let weightedSum = 0;
+        let similaritySum = 0;
 
-          if(!movies.includes(doc.data().gameID)){
-            movies.push(doc.data().gameID);
-          }
+        for(let i = 0 ; i < k ; i++){
+          const user = users[i];
+          var sim = similarityScores[user];
+
+          // console.log("user length " + users.length)
+          // console.log(users)
+          // console.log(users[i])
+          // console.log(i)
+
+          if(user != null){
+          let docs =  db.collection("reviews").where(`gameID`,`==`, id).where(`user`, `==`, user);
+          // console.log(docs)
+
 
           
 
+          docs.get().then(querySnapshot => {
+            if(querySnapshot.size>0){
+              querySnapshot.forEach(doc => {
+              let rating = doc.data().rating;
+                if (rating != null) {
+                  weightedSum += rating * sim;
+                  similaritySum += sim;
+
+                }
+      
+
+              });
+            }
+            setPrediction(weightedSum / similaritySum);
+
+          })
+
+   
+
+         
+
+          // console.log(stars)
+
+
 
         }
-        )
-
-        
 
 
-      });
+        }
+        // let stars = (weightedSum / similaritySum);
+        // console.log(stars)
+      }
+
+  // for (var i = 0; i < data.titles.length; i++) {
+  //   var title = data.titles[i];
+  //   if (user[title] == null) {
+  //     var k = 5;
+  //     var weightedSum = 0;
+  //     var similaritySum = 0;
+  //     for (var j = 0; j < k; j++) {
+  //       var name = data.users[j].name;
+  //       var sim = similarityScores[name];
+  //       var ratings = data.users[j];
+  //       var rating = ratings[title];
+  //       if (rating != null) {
+  //         weightedSum += rating * sim;
+  //         similaritySum += sim;
+  //       }
+  //     }
+
+    const euclideanDistance = (user, user2)=> {
+      // console.log(user)
+     
+      // console.log(user2)
 
       var sumSquares = 0;
 
-      for (let i = 0; i < movies.length; i++) {
-        let movie = movies[i];
+      for (let i = 0; i < games.length; i++) {
+        let game = games[i];
+        // console.log(game)
         
-        let docs =  db.collection("reviews").where(`gameID`,`==`, movie).where(`user`, `==`, user);
+        let docs =  db.collection("reviews").where(`gameID`,`==`, game).where(`user`, `==`, user);
 
-        let docs2 =  db.collection("reviews").where(`gameID`,`==`, movie).where(`user`, `==`, user2);
+        let docs2 =  db.collection("reviews").where(`gameID`,`==`, game).where(`user`, `==`, user2);
+
 
         let rating1 = null;
         let rating2 = null;
         docs.get().then(querySnapshot => {
+          // console.log("rating1 " + querySnapshot.size)
           if(querySnapshot.size>0){
+
             querySnapshot.forEach(doc => {
               rating1 = doc.data().rating;
+              // console.log(doc.data());
+
             });
           }
         })
+        // console.log(rating1)
 
         docs2.get().then(querySnapshot => {
+          // console.log("rating2 " + querySnapshot.size)
+
           if(querySnapshot.size>0){
             querySnapshot.forEach(doc => {
               rating2 = doc.data().rating;
+              // console.log(doc.data().rating)
             });
           }
         })
+        // console.log(rating2)
+
+      //  console.log( rating1)
+      //  console.log( rating2)
 
         if (rating1 != null && rating2 != null) {
+          // console.log("here")
           var diff = rating1 - rating2;
           sumSquares += diff * diff;
         }
@@ -243,9 +332,6 @@ const GameDetails = (props) => {
 
 
 
-
-console.log(users)
-console.log(movies)
 
 
 
@@ -279,7 +365,31 @@ console.log(movies)
 
     let { id } = useParams();
     useEffect(() => {
-      euclideanDistance();
+       //This is going to be somewhere else
+    
+      
+      // db.collection("reviews").onSnapshot((snapshot) => {
+      //   snapshot.docs.map((doc) =>{
+
+          
+      //     if(!users.includes(doc.data().user)){
+      //     users.push(doc.data().user);
+      //     }
+
+      //     if(!games.includes(doc.data().gameID)){
+      //       games.push(doc.data().gameID);
+      //     }
+
+          
+
+
+      //   }
+      //   )
+
+    
+
+      // });
+    
 
       db.collection("reviews").where(`gameID`,`==`, id).where(`user`, `==`, sub).onSnapshot((snapshot) =>{
 
@@ -321,7 +431,7 @@ fetch(
 ).then((response) => response.json())
 .then((data) => {
     const game =  data[0]
-    console.log(game)
+    // console.log(game)
 
     const genres =  data[0].genres.toString()
     const platforms = data[0].platforms.toString()
@@ -335,7 +445,7 @@ setGameName(game.name)
 setSummary(game.summary)
 setCriticRating(game.aggregated_rating);
 setCriticCount(game.aggregated_rating_count	)
-console.log(game.aggregated_rating)
+// console.log(game.aggregated_rating)
 
 
 fetch(
@@ -497,10 +607,10 @@ const getUserMetadata = async () => {
 
       if(gamesArray.includes(id)){
         setChecked(true)
-        console.log("Setting to true")
+        // console.log("Setting to true")
       }else{
         setChecked(false)
-        console.log("Setting to false")
+        // console.log("Setting to false")
 
       }
      
@@ -510,7 +620,20 @@ const getUserMetadata = async () => {
     console.log(e.message);
   }
 };
+
+      // setUsers(users);
+      // setGames(games);
+      // console.log(games)
 getUserMetadata();
+db.collection("reviews").onSnapshot((snapshot) =>
+{
+  
+    setUsers(snapshot.docs.map((doc) => (doc.data().user)).filter((value, index, self) => self.indexOf(value) === index));
+    setGames(snapshot.docs.map((doc) => (doc.data().gameID)).filter((value, index, self) => self.indexOf(value) === index))
+
+
+})
+findNearestNeighbors(sub);
 
 })
 
@@ -523,6 +646,9 @@ getUserMetadata();
 
 }, []);
 const MoviePalyerModal = (props) => {
+  // console.log(users)
+  // console.log(games)
+
     const youtubeUrl = "https://www.youtube.com/watch?v=";
     return (
       <Modal
@@ -659,7 +785,7 @@ return (
       <div className="row mt-3">
         <div className="col-md-3">
           <p style={{ color: "#5a606b", fontWeight: "bolder" }}>RELEASE DATE</p>
-          <p style={{ color: "#f4c10f" }}>{criticCount}</p>
+          <p style={{ color: "#f4c10f" }}>{prediction}</p>
         </div>
         <div className="col-md-3">
           <p style={{ color: "#5a606b", fontWeight: "bolder" }}>RUN TIME</p>
