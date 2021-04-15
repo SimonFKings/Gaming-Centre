@@ -11,6 +11,11 @@ import StarRatings from 'react-star-ratings';
 
 import Switch from "react-switch";
 import { db } from "../firebase";
+// import Carousel from 'react-elastic-carousel';
+import Game from '../components/Game'
+import 'pure-react-carousel/dist/react-carousel.es.css';
+import "react-responsive-carousel/lib/styles/carousel.min.css"; // requires a loader
+import { Carousel } from 'react-responsive-carousel';
 
 
 
@@ -36,6 +41,7 @@ const GameDetails = (props) => {
 
     const [users, setUsers] = useState([])
     const [games, setGames] = useState([])
+    const [similarGames, setSimilarGames] = useState([]);
 
     const [prediction, setPrediction] = useState(0)
 
@@ -426,6 +432,7 @@ fetch(
          },
          body:
    'fields *; where id =' + id +' ;'
+   
 
  }
 
@@ -441,6 +448,9 @@ fetch(
 
     const videoId = data[0].videos[0];
     // const artwork = data[0].artworks[0];
+
+    const similarGames = JSON.stringify(game.similar_games).replace("[","(" ).replace("]",")").replace(/['"]+/g, '') ;
+    console.log(similarGames)
 
     let artwork = null;
     if(data[0].artworks){
@@ -484,7 +494,30 @@ fetch(
     setImage(url)
 
    })
+   fetch(
+    proxyurl + `https://api.igdb.com/v4/games`,
+    {
+      method: 'POST',
+      headers: {
+             'Client-ID': `ozi5hp5ssdlwirs85n2deu5f4rtnm0`,
+             Authorization: `Bearer ${token}`,
+             'Access-Control-Allow-Origin' : '*',
+        
+             
+           },
+           body:
+     `fields *; where id = ${similarGames} ;`
+  
+   }
+  
+  
+    
+  ).then((response) => response.json())
+  .then((data) =>{
+    console.log(data)
+    setSimilarGames(data)
 
+  })
 
 fetch(
     proxyurl+
@@ -589,7 +622,6 @@ fetch(
    ).then((response) => response.json())
    .then((data) => {
 
-    console.log("G")
 setArtwork(data[0].url.replace("thumb", "1080p"));
 })
 }else{
@@ -821,10 +853,18 @@ return (
 
       <div className="row mt-3">
         <div className="col">
-          <p style={{ color: "#5a606b", fontWeight: "bolder" }}>CASTS</p>
+          <p style={{ color: "#5a606b", fontWeight: "bolder" }}>SIMILAR GAMES</p>
         </div>
       </div>
-      <div className="row mt-3">{criticCount}</div>
+<Carousel centerMode={true} centerSlidePercentage="40" showThumbs={false}>
+  
+      {similarGames.length > 0 && similarGames.map((game) => (
+          <Game key ={game.id} {...game}/>
+        ))}
+        
+</Carousel>
+
+
 
       <div className="row mt-3">
         <div className="col">
