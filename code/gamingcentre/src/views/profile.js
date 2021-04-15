@@ -8,6 +8,7 @@ import { db } from "../firebase";
 import Post from "../components/post" 
 
 
+import Carousel from 'react-elastic-carousel';
 
 
 
@@ -15,7 +16,7 @@ import Post from "../components/post"
 
 const Profile = () => {
   const { user } = useAuth0();
-  const { name, picture, email, sub } = user;
+  const { given_name,family_name, picture, email, sub, nickname } = user;
 
   const [post, setPosts ] = useState([]);
 
@@ -24,6 +25,7 @@ const Profile = () => {
   // const [username, setUsername] = useState("");
 
   const [ games , setGames] = useState([]);
+  const [recommendedGames, setRecommended] = useState([])
 
 
   const { getAccessTokenSilently } = useAuth0();
@@ -35,7 +37,6 @@ let username = "";
 
       try {
         const token = await getAccessTokenSilently();
-        console.log(token)
   
         const response = await fetch(
            `https://dev-22x3u4l0.us.auth0.com/api/v2/users/` + sub,
@@ -47,12 +48,51 @@ let username = "";
           );
   
           const responseData = await response.json();
+          const metadata = responseData.user_metadata;
+          
+          if(metadata && metadata.firstName && metadata.lastName && metadata.usernmae){
           setFirstName(responseData.user_metadata.firstName)
           setLastName(responseData.user_metadata.lastName)
           username = responseData.user_metadata.username
 
           
-
+          }else{
+            username = nickname
+            try {
+              const token = await getAccessTokenSilently();
+        
+        
+              const response = await fetch(
+                `https://dev-22x3u4l0.us.auth0.com/api/v2/users/` + sub ,
+                {    
+                  // mode: "no-cors",
+                  method: 'PATCH',
+                  headers: {
+                    Authorization: `Bearer ${token}`,
+          
+                    'Content-Type': 'application/json'      
+        
+                  },
+                  body: JSON.stringify( { "user_metadata": {
+                    "firstName" : given_name, 
+                    "lastName" : family_name,
+                    "username" : nickname,
+                    "emailAddress" : email
+        
+                }})
+                  
+        
+                }
+              );
+        
+        
+        
+        
+              const responseData = await response.json();
+        console.log(responseData)
+            } catch (error) {
+            }
+          }
           if(responseData.user_metadata && responseData.user_metadata.games){
           const games = JSON.stringify(responseData.user_metadata.games).replace("[","(" ).replace("]",")").replace(/['"]+/g, '') ;
          
@@ -89,6 +129,56 @@ let username = "";
             .then((data) =>{
               setGames(data)
 
+              const gamesList = data;
+
+              const recommendID = [];
+              const recommendList = [];
+
+
+              gamesList.map((game) => (
+
+                // recommendList.push(game.similar_games)
+                game.similar_games.map((recommend) =>(
+                  recommendID.push(recommend)
+                )
+                )
+
+
+              )
+              
+              )
+
+              console.log(recommendID)
+
+                //   for (let index = 0; index < recommendID.length; index++) {
+                //     fetch(
+                //   proxyurl + `https://api.igdb.com/v4/games`,
+                //   {
+                //     method: 'POST',
+                //     headers: {
+                //            'Client-ID': `ozi5hp5ssdlwirs85n2deu5f4rtnm0`,
+                //            Authorization: `Bearer ${token}`,
+                //            'Access-Control-Allow-Origin' : '*',
+                      
+                           
+                //          },
+                //          body:
+                //    `fields *; where id = ${recommendID[index]} ;`
+                
+                //  }
+                
+                
+                  
+                // )
+                // .then((response) => response.json())
+                // .then((data) =>{
+                //   recommendList.push(data)
+
+
+                //   }
+                // )
+                // }
+                // console.log(recommendList)
             })
             
 
@@ -99,6 +189,7 @@ let username = "";
         console.log(e.message);
       }
 
+      console.log(username)
      db.collection("posts").where(`userName`,`==`, username ).onSnapshot((snapshot) =>
       {
         // const a = snapshot.docs.map((doc) => ({id: doc.id, post:doc.data()}));
@@ -144,6 +235,19 @@ let username = "";
         <Link to ="/edit-profile">Edit Profile</Link>
 
       </div>
+
+      <div className="row">
+      <h2>Recommended Games</h2>
+
+
+      {/* <Carousel>
+      {recommendedGames.length > 0 && recommendedGames.map((recommended) => (
+          <Game key ={recommended} {...recommended}/>
+        ))}
+        
+</Carousel> */}
+</div>
+
       <div className="row">
       <h2>My Games</h2>
 

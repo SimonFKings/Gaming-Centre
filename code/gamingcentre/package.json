@@ -9,16 +9,19 @@
     "auth0": "^2.32.0",
     "bootstrap": "^4.6.0",
     "firebase": "^8.3.0",
+    "pure-react-carousel": "^1.27.6",
     "react": "^16.14.0",
     "react-bootstrap": "^1.5.0",
     "react-dom": "^16.14.0",
+    "react-elastic-carousel": "^0.11.5",
     "react-player": "^2.9.0",
     "react-rating-stars-component": "^2.2.0",
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.0",
     "react-star-ratings": "^2.3.0",
     "react-switch": "^6.0.0",
-    "reactstrap": "^8.9.0"
+    "reactstrap": "^8.9.0",
+    "styled-components": "^5.2.3"
   },
   "scripts": {
     "start": "cross-env PORT=4040 react-scripts start",

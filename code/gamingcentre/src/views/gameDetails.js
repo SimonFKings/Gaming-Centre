@@ -231,7 +231,10 @@ const GameDetails = (props) => {
 
               });
             }
+
+            console.log(weightedSum / similaritySum)
             setPrediction(weightedSum / similaritySum);
+            
 
           })
 
@@ -437,9 +440,13 @@ fetch(
     const platforms = data[0].platforms.toString()
 
     const videoId = data[0].videos[0];
-    const artwork = data[0].artworks[0];
+    // const artwork = data[0].artworks[0];
 
+    let artwork = null;
+    if(data[0].artworks){
+     artwork = data[0].artworks[0];
 
+    }
 
 setGameName(game.name)
 setSummary(game.summary)
@@ -558,7 +565,7 @@ setPlatforms(data)
 
 setVideo(data[0].video_id)
 })
-
+if(artwork){
 fetch(
     proxyurl+
     `https://api.igdb.com/v4/artworks`,
@@ -582,8 +589,13 @@ fetch(
    ).then((response) => response.json())
    .then((data) => {
 
-setArtwork(data[0].url.replace("thumb", "1080p"))
+    console.log("G")
+setArtwork(data[0].url.replace("thumb", "1080p"));
 })
+}else{
+  setArtwork(`https://media-assets-02.thedrum.com/cache/images/thedrum-prod/s3-news-tmp-145688-anzu--default--1080.png`)
+}
+
 
 const getUserMetadata = async () => {
 
@@ -601,7 +613,12 @@ const getUserMetadata = async () => {
 
       const responseData = await response.json();
 
-      const gamesArray = responseData.user_metadata.games
+      
+      const metadata = responseData.user_metadata;
+
+      if(metadata){
+      const gamesArray = metadata.games
+
       if(gamesArray){
       setMyGames(gamesArray);
 
@@ -615,6 +632,7 @@ const getUserMetadata = async () => {
       }
      
     }
+  }
       
   } catch (e) {
     console.log(e.message);
