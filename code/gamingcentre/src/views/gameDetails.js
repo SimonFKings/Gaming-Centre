@@ -38,9 +38,14 @@ const GameDetails = (props) => {
     const [checked, setChecked] = useState(false);
     const [myGames, setMyGames] = useState([]);
     const [rating, setRating] = useState(0);
+    const [ratingHide, setRatingHide] = useState(true)
+    const [predictHid, setPredictHide] = useState(true)
 
-    const [users, setUsers] = useState([])
-    const [games, setGames] = useState([])
+
+
+
+    // const [users, setUsers] = useState([])
+    // const [games, setGames] = useState([])
     const [similarGames, setSimilarGames] = useState([]);
 
     const [prediction, setPrediction] = useState(0)
@@ -139,7 +144,6 @@ const GameDetails = (props) => {
     
     
           const responseData = await response.json();
-    console.log(responseData)
         } catch (error) {
         }
       }
@@ -153,10 +157,9 @@ const GameDetails = (props) => {
     }
   
     const changeRating = (newRating) =>{
-
+ 
 
   let docs =  db.collection("reviews").where(`gameID`,`==`, id).where(`user`, `==`, sub);
-  console.log(docs)
 
       docs.get().then(querySnapshot => {
         if(querySnapshot.size === 0 ){
@@ -180,15 +183,17 @@ const GameDetails = (props) => {
       
     }
    
+ 
+      
+    const findNearestNeighbors = (user, users, games) =>{ 
 
-    const findNearestNeighbors = (user) =>{
 
       var similarityScores = {};
 
     for (let i = 0; i < users.length; i++) {
       let other = users[i];
       if(other != user){
-        const similarity = euclideanDistance(user, other)
+        const similarity = euclideanDistance(user, other, games)
         // console.log(similarity)
 
         similarityScores[other] = similarity;
@@ -212,17 +217,13 @@ const GameDetails = (props) => {
           const user = users[i];
           var sim = similarityScores[user];
 
-          // console.log("user length " + users.length)
-          // console.log(users)
-          // console.log(users[i])
-          // console.log(i)
-
+ 
           if(user != null){
           let docs =  db.collection("reviews").where(`gameID`,`==`, id).where(`user`, `==`, user);
-          // console.log(docs)
 
 
           
+          console.log("inside Fnn5")
 
           docs.get().then(querySnapshot => {
             if(querySnapshot.size>0){
@@ -240,7 +241,6 @@ const GameDetails = (props) => {
 
             console.log(weightedSum / similaritySum)
             setPrediction(weightedSum / similaritySum);
-            
 
           })
 
@@ -277,7 +277,7 @@ const GameDetails = (props) => {
   //       }
   //     }
 
-    const euclideanDistance = (user, user2)=> {
+    const euclideanDistance = (user, user2, games)=> {
       // console.log(user)
      
       // console.log(user2)
@@ -398,11 +398,40 @@ const GameDetails = (props) => {
     
 
       // });
-    
+      // findNearestNeighbors(sub);
+      let users = [];
+      let games = [];
+      db.collection("reviews").onSnapshot((snapshot) =>
+      {
+        
+           users = snapshot.docs.map((doc) => (doc.data().user)).filter((value, index, self) => self.indexOf(value) === index);
+           console.log(users);
+  
+          games = (snapshot.docs.map((doc) => (doc.data().gameID)).filter((value, index, self) => self.indexOf(value) === index))
+          console.log(games)
+  
+          findNearestNeighbors(sub, users, games);
+
+      })
+
+
 
       db.collection("reviews").where(`gameID`,`==`, id).where(`user`, `==`, sub).onSnapshot((snapshot) =>{
 
-        setRating(snapshot.docs.length>0 ? snapshot.docs[0].data().rating : 0);
+        if(snapshot.docs.length>0){
+
+          setRating(snapshot.docs[0].data().rating);
+          setRatingHide(false)
+          setPredictHide(true)
+
+        }else{
+          setRating(0);
+          setRatingHide(true)
+          setPredictHide(false)
+
+        }
+
+        // setRating(snapshot.docs.length>0 ? snapshot.docs[0].data().rating : 0);
         
         });
       
@@ -514,7 +543,6 @@ fetch(
     
   ).then((response) => response.json())
   .then((data) =>{
-    console.log(data)
     setSimilarGames(data)
 
   })
@@ -671,20 +699,28 @@ const getUserMetadata = async () => {
   }
 };
 
-      // setUsers(users);
-      // setGames(games);
-      // console.log(games)
 getUserMetadata();
-db.collection("reviews").onSnapshot((snapshot) =>
-{
+
+
+
+db.collection("reviews").where(`gameID`,`==`, id).where(`user`, `==`, sub).onSnapshot((snapshot) =>{
+
+  if(snapshot.docs.length>0){
+
+    setRating(snapshot.docs[0].data().rating);
+    setRatingHide(false)
+    setPredictHide(true)
+
+  }else{
+    setRating(0);
+    setRatingHide(true)
+    setPredictHide(false)
+
+  }
+
+  // setRating(snapshot.docs.length>0 ? snapshot.docs[0].data().rating : 0);
   
-    setUsers(snapshot.docs.map((doc) => (doc.data().user)).filter((value, index, self) => self.indexOf(value) === index));
-    setGames(snapshot.docs.map((doc) => (doc.data().gameID)).filter((value, index, self) => self.indexOf(value) === index))
-
-
-})
-findNearestNeighbors(sub);
-
+  });
 })
 
 })
@@ -798,19 +834,11 @@ return (
 
       <div className="col">
 
-      <div className="row mt-3">
+      <div className="row mt-3" hidden={ratingHide}>
         
       <p style={{ color: "#5a606b", fontWeight: "bolder" }}>MY RATING</p>
       <div className="row mt-3">
-
-            {/* <ReactStars
-              count={5}
-              value={rating}
-              size={20}
-              color1={"#f4c10f"}
-              onChange = {changeRating}
-            ></ReactStars> */}
-
+        
             <StarRatings
             rating ={rating}
             changeRating= {changeRating}
@@ -818,6 +846,22 @@ return (
           
             />
           </div>
+          </div>
+                <div className="col">
+
+          <div className="row mt-3" hidden={predictHid}>
+
+          <p style={{ color: "#5a606b", fontWeight: "bolder" }}>PREDICTED RATING</p>
+          
+          <StarRatings
+            rating ={prediction}
+            starRatedColor	= {"grey"}
+            isSelectable = {false}
+          
+            />
+
+          </div>
+
           </div>
 
       </div>
@@ -856,7 +900,7 @@ return (
           <p style={{ color: "#5a606b", fontWeight: "bolder" }}>SIMILAR GAMES</p>
         </div>
       </div>
-<Carousel centerMode={true} centerSlidePercentage="40" showThumbs={false}>
+<Carousel centerMode={true} centerSlidePercentage="40" showThumbs={false} useKeyboardArrows = {true}> 
   
       {similarGames.length > 0 && similarGames.map((game) => (
           <Game key ={game.id} {...game}/>
