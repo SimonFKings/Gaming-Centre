@@ -1,149 +1,123 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 
 import { useAuth0, withAuthenticationRequired } from "@auth0/auth0-react";
 import { Loading } from "../components";
-import Game from '../components/Game'
-
-
+import Game from "../components/Game";
 
 const Games = () => {
-const [ games , setGames] = useState([]);
-const [ searchTerm , setSearchTerm] = useState('');
+  const [games, setGames] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
 
+  useEffect(() => {
+    let isMounted = true; // note this flag denote mount status
 
+    const getGames = async () => {
+      try {
+        const response = await fetch(
+          `https://id.twitch.tv/oauth2/token?client_id=ozi5hp5ssdlwirs85n2deu5f4rtnm0&client_secret=4fg8qly9eqv7kwu9pib34ydk31zxf0&grant_type=client_credentials`,
 
-useEffect(()  => {
-  let isMounted = true; // note this flag denote mount status
-
-  const getGames = async () => {
-
-    try {
-
-      const response = await fetch(
-         `https://id.twitch.tv/oauth2/token?client_id=ozi5hp5ssdlwirs85n2deu5f4rtnm0&client_secret=4fg8qly9eqv7kwu9pib34ydk31zxf0&grant_type=client_credentials`,
-        
-        {    
-          method: 'POST',
-
-        }
+          {
+            method: "POST",
+          }
         );
 
-        if(isMounted){
-        const responseData = await response.json();
-      
-        const token = responseData.access_token;
-        const proxyurl = "https://cors-anywhere.herokuapp.com/";
-        const response2 = await fetch(
+        if (isMounted) {
+          const responseData = await response.json();
 
-         proxyurl+
-          `https://api.igdb.com/v4/games`,
-         
-         {    
-           method: 'POST',
+          const token = responseData.access_token;
+          const proxyurl = "https://cors-anywhere.herokuapp.com/";
+          const response2 = await fetch(
+            proxyurl + `https://api.igdb.com/v4/games`,
 
-           headers: {
-             'Client-ID': `ozi5hp5ssdlwirs85n2deu5f4rtnm0`,
-             Authorization: `Bearer ${token}`,
-             'Access-Control-Allow-Origin' : '*',
- 
-             
-           },
-           body:
-           'fields name, cover, summary, total_rating, follows, similar_games	; where follows > 1 ;limit 9;sort follows desc;'
+            {
+              method: "POST",
 
-         }
-         );
+              headers: {
+                "Client-ID": `ozi5hp5ssdlwirs85n2deu5f4rtnm0`,
+                Authorization: `Bearer ${token}`,
+                "Access-Control-Allow-Origin": "*",
+              },
+              body:
+                "fields name, cover, summary, total_rating, follows, similar_games	; where follows > 1 ;limit 9;sort follows desc;",
+            }
+          );
 
-         const responseData2 = await response2.json();
-         setGames(responseData2)
-         console.log(responseData2)
+          const responseData2 = await response2.json();
+          setGames(responseData2);
+          console.log(responseData2);
+        }
+      } catch (e) {
+        console.log(e.message);
+      }
+    };
 
-         }
+    getGames();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
-    } catch (e) {
-      console.log(e.message);
+  const handleOnSubmit = (e) => {
+    e.preventDefault();
+    if (searchTerm) {
+      fetch(
+        `https://id.twitch.tv/oauth2/token?client_id=ozi5hp5ssdlwirs85n2deu5f4rtnm0&client_secret=4fg8qly9eqv7kwu9pib34ydk31zxf0&grant_type=client_credentials`,
+        {
+          method: "POST",
+        }
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          const token = data.access_token;
+          const proxyurl = "https://cors-anywhere.herokuapp.com/";
+
+          fetch(proxyurl + `https://api.igdb.com/v4/games`, {
+            method: "POST",
+            headers: {
+              "Client-ID": `ozi5hp5ssdlwirs85n2deu5f4rtnm0`,
+              Authorization: `Bearer ${token}`,
+              "Access-Control-Allow-Origin": "*",
+            },
+            body:
+              'fields name, cover, summary, total_rating, follows;  ;search "' +
+              searchTerm +
+              '";',
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              console.log(data);
+              setGames(data);
+            });
+        });
     }
-   
+    setSearchTerm("");
   };
-  
-  getGames();
-  return () => { isMounted = false };
-}, []);
 
-const handleOnSubmit = (e)=>{
-  e.preventDefault();
-if(searchTerm){
-fetch(`https://id.twitch.tv/oauth2/token?client_id=ozi5hp5ssdlwirs85n2deu5f4rtnm0&client_secret=4fg8qly9eqv7kwu9pib34ydk31zxf0&grant_type=client_credentials`,      
-{    
-  method: 'POST',
+  const handleOnChange = (e) => {
+    setSearchTerm(e.target.value);
+  };
 
-}
-).then((response) => response.json())
-.then((data) => {
-  
-  const token = data.access_token
-  const proxyurl = "https://cors-anywhere.herokuapp.com/";
+  return (
+    <>
+      {
+        <header>
+          <form onSubmit={handleOnSubmit}>
+            <input
+              className="search"
+              type="search"
+              placeholder="Search..."
+              value={searchTerm}
+              onChange={handleOnChange}
+            />
+          </form>
+        </header>
+      }
 
-fetch(
-  proxyurl + `https://api.igdb.com/v4/games`,
-  {
-    method: 'POST',
-    headers: {
-           'Client-ID': `ozi5hp5ssdlwirs85n2deu5f4rtnm0`,
-           Authorization: `Bearer ${token}`,
-           'Access-Control-Allow-Origin' : '*',
-      
-           
-         },
-         body:
-   'fields name, cover, summary, total_rating, follows;  ;search "' + searchTerm + '";'
-
- }
-
-
-  
-).then((response) => response.json())
-.then((data) => {
-  console.log(data)
-  setGames(data)
-})
-
-})
-}
-setSearchTerm('')
-
-
-};
-
-
-const handleOnChange = (e)=>{
-  setSearchTerm(e.target.value);
-}
-
-
-  return (<>
-    {<header>
-      <form onSubmit={handleOnSubmit}>
-        
-      <input className="search"
-       type = "search" 
-       placeholder="Search..." 
-       value={searchTerm} 
-       onChange={handleOnChange}/>
-
-
-      </form>
-
-  </header> }
-
-<div className="game-cotainer">
- 
-      {games.length > 0 && games.map((game) => (
-          <Game key ={game.id} {...game}/>
-        ))}
-    </div>
+      <div className="game-cotainer">
+        {games.length > 0 &&
+          games.map((game) => <Game key={game.id} {...game} />)}
+      </div>
     </>
-
   );
 };
 

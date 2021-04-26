@@ -25,6 +25,7 @@ const addComment = () => {
 
     )
 
+    //Add new post comments to database
     db.collection("posts").doc(id).update({
         comments: commentArray
     }).then(function(){
