@@ -16,6 +16,8 @@ import Game from "../components/Game";
 import "pure-react-carousel/dist/react-carousel.es.css";
 import "react-responsive-carousel/lib/styles/carousel.min.css"; // requires a loader
 import { Carousel } from "react-responsive-carousel";
+import { FormatListBulleted } from "@material-ui/icons";
+// let a = false;
 
 const GameDetails = (props) => {
   const [gameName, setGameName] = useState([]);
@@ -31,11 +33,12 @@ const GameDetails = (props) => {
   const [checked, setChecked] = useState(false);
   const [myGames, setMyGames] = useState([]);
   const [rating, setRating] = useState(0);
-  const [ratingHide, setRatingHide] = useState(true);
-  const [predictHid, setPredictHide] = useState(true);
+  // const [ratingHide, setRatingHide] = useState(true);
+  // const [predictHide, setPredictHide] = useState(true);
   const [similarGames, setSimilarGames] = useState([]);
   const [prediction, setPrediction] = useState(0);
   const [storyline, setStoryline] = useState(0);
+  // const [fnnFound, setfnnFound] = useState();
 
   const { user } = useAuth0();
   const { name, picture, email, sub } = user;
@@ -179,15 +182,11 @@ const GameDetails = (props) => {
               if (rating != null) {
                 weightedSum += rating * sim;
                 similaritySum += sim;
+                if (weightedSum / similaritySum) {
+                  setPrediction(weightedSum / similaritySum);
+                }
               }
             });
-          }
-
-          if (weightedSum / similaritySum) {
-            setPrediction(weightedSum / similaritySum);
-            return true;
-          } else {
-            return false;
           }
         });
       }
@@ -250,8 +249,6 @@ const GameDetails = (props) => {
         //If the review exist show it
         if (snapshot.docs.length > 0) {
           setRating(snapshot.docs[0].data().rating);
-          setRatingHide(false);
-          setPredictHide(true);
         } else {
           //If rating does not exist
           let users = [];
@@ -265,24 +262,8 @@ const GameDetails = (props) => {
               .map((doc) => doc.data().gameID)
               .filter((value, index, self) => self.indexOf(value) === index);
 
-            //Check if the game has been rated by other users
             if (games.includes(id)) {
-              //If fnn is calcualted show the predicted rating
-              if (findNearestNeighbors(sub, users, games)) {
-                setRating(0);
-                setRatingHide(true);
-                setPredictHide(false);
-
-                //If not show a blank rating
-              } else {
-                setRating(0);
-                setRatingHide(false);
-                setPredictHide(true);
-              }
-            } else {
-              setRating(0);
-              setRatingHide(false);
-              setPredictHide(true);
+              findNearestNeighbors(sub, users, games);
             }
           });
         }
@@ -586,7 +567,7 @@ const GameDetails = (props) => {
       </div>
 
       <div className="col">
-        <div className="row mt-3" hidden={ratingHide}>
+        <div className="row mt-3">
           <p style={{ color: "#5a606b", fontWeight: "bolder" }}>MY RATING</p>
           <div className="row mt-3">
             <StarRatings
@@ -597,7 +578,7 @@ const GameDetails = (props) => {
           </div>
         </div>
         <div className="col">
-          <div className="row mt-3" hidden={predictHid}>
+          <div className="row mt-3">
             <p style={{ color: "#5a606b", fontWeight: "bolder" }}>
               PREDICTED RATING
             </p>
