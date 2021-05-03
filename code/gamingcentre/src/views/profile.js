@@ -17,7 +17,6 @@ const Profile = () => {
 
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  // const [username, setUsername] = useState("");
 
   const [games, setGames] = useState([]);
   const [recommendedGames, setRecommended] = useState([]);
@@ -78,7 +77,6 @@ const Profile = () => {
             );
 
             const responseData = await response.json();
-            console.log(responseData);
           } catch (error) {}
         }
         if (responseData.user_metadata && responseData.user_metadata.games) {
@@ -122,8 +120,6 @@ const Profile = () => {
                       recommendID.push(recommend)
                     )
                   );
-
-                  console.log(recommendID);
                 });
             });
         }
@@ -131,19 +127,13 @@ const Profile = () => {
         console.log(e.message);
       }
 
-      console.log(username);
       db.collection("posts")
         .where(`userName`, `==`, username)
         .onSnapshot((snapshot) => {
-          // const a = snapshot.docs.map((doc) => ({id: doc.id, post:doc.data()}));
-          // console.log(username);
-
           setPosts(
             snapshot.docs.map((doc) => ({ id: doc.id, post: doc.data() }))
           );
         });
-
-      // if(doc.data().userName === "simon-fk")
     };
     getUserMetadata();
   }, []);
@@ -169,22 +159,7 @@ const Profile = () => {
       </div>
 
       <div className="row">
-        <h2>Recommended Games</h2>
-
-        {/* <Carousel>
-      {recommendedGames.length > 0 && recommendedGames.map((recommended) => (
-          <Game key ={recommended} {...recommended}/>
-        ))}
-        
-</Carousel> */}
-      </div>
-
-      <div className="row">
         <h2>My Games</h2>
-
-        {/* { <pre className="col-12 text-light bg-dark p-4">
-          {JSON.stringify(user, null, 2)}
-        </pre> } */}
 
         <div className="game-cotainer">
           {games.length > 0 &&

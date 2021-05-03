@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 
 import { useAuth0, withAuthenticationRequired } from "@auth0/auth0-react";
 import { Loading } from "../components";
-// import { Button } from 'react-native';
 
 const EditProfile = () => {
   const { user } = useAuth0();
@@ -59,39 +58,41 @@ const EditProfile = () => {
   const { getAccessTokenSilently } = useAuth0();
 
   const updateUser = async () => {
-    try {
-      const token = await getAccessTokenSilently();
+    let emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
-      const response = await fetch(
-        `https://dev-22x3u4l0.us.auth0.com/api/v2/users/` + sub,
-        {
-          // mode: "no-cors",
-          method: "PATCH",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            // 'Access-Control-Allow-Origin' : '*',
-            // 'Content-Type': 'application/json'
-            // 'Accept': 'application/json',
-            "Content-Type": "application/json",
+    if (!emailAddress) {
+      alert("Please enter an email");
+    } else if (!username) {
+      alert("Please enter an username");
+    } else if (!emailRegex.test(emailAddress)) {
+      alert("Please enter a valid email");
+    } else {
+      try {
+        const token = await getAccessTokenSilently();
 
-            // 'Access-Control-Allow-Methods' : '*',
-            // "x-requested-with": 'XMLHttpRequest',
-            // "origin" : "http://localhost:4040"
-          },
-          body: JSON.stringify({
-            user_metadata: {
-              firstName: firstName,
-              lastName: lastName,
-              username: username,
-              emailAddress: emailAddress,
+        const response = await fetch(
+          `https://dev-22x3u4l0.us.auth0.com/api/v2/users/` + sub,
+          {
+            method: "PATCH",
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
             },
-          }),
-        }
-      );
+            body: JSON.stringify({
+              user_metadata: {
+                firstName: firstName,
+                lastName: lastName,
+                username: username,
+                emailAddress: emailAddress,
+              },
+            }),
+          }
+        );
 
-      const responseData = await response.json();
-      console.log(responseData);
-    } catch (error) {}
+        const responseData = await response.json();
+        console.log(responseData);
+      } catch (error) {}
+    }
   };
 
   return (
