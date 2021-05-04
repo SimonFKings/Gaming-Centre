@@ -50,12 +50,9 @@ const Game = ({ id, name, cover, summary, total_rating, storyline }) => {
               "Client-ID": `ozi5hp5ssdlwirs85n2deu5f4rtnm0`,
               Authorization: `Bearer ${token}`,
 
-              //  'Content-Type': 'application/json',
-              //  'Accept': 'application/json',
               "Access-Control-Allow-Origin": "*",
             },
             body: `fields url; where id = ${cover};`,
-            //  'fields url;'
           }
         );
         const responseData2 = await response2.json();

@@ -9,6 +9,7 @@ import Game from "./components/Game";
 import CreatePost from "./components/createPost";
 import games from "./views/games";
 import { unmountComponentAtNode } from "react-dom";
+import CommentInput from "./components/commentinput";
 
 //App Compne
 it("renders Home without crashing", () => {
@@ -30,23 +31,9 @@ it("renders Game Details without crashing", () => {
   shallow(<GameDetails />);
 });
 
-it("renders 2 header", () => {
-  const wrapper = shallow(<Home />);
-  const welcome = <h1>Welcome to Game Centre</h1>;
+it("renders Game component summary", () => {
+  const wrapper = shallow(<Game />);
+  const welcome = <h3> Summary:</h3>;
 
   expect(wrapper.contains(welcome)).toEqual(true);
-});
-
-let container = null;
-beforeEach(() => {
-  // setup a DOM element as a render target
-  container = document.createElement("div");
-  document.body.appendChild(container);
-});
-
-afterEach(() => {
-  // cleanup on exiting
-  unmountComponentAtNode(container);
-  container.remove();
-  container = null;
 });

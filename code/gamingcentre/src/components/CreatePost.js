@@ -104,9 +104,5 @@ const CreatePost = () => {
     </div>
   );
 };
-//Show upload button if a file has been uploaded
-//Maybe a problem if users upload same name for images
-//File names say jpg
-//Replace the examples delete button with a timestamp
 
 export default CreatePost;
