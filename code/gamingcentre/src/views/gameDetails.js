@@ -565,29 +565,31 @@ const GameDetails = (props) => {
           <Switch onChange={handleChange} checked={checked} />
         </div>
       </div>
-
-      <div className="col">
-        <div className="row mt-3">
+      <div className="row mt-3">
+        <div className="col">
           <p style={{ color: "#5a606b", fontWeight: "bolder" }}>MY RATING</p>
           <div className="row mt-3">
             <StarRatings
               rating={rating}
               changeRating={changeRating}
               starRatedColor={"purple"}
+              starDimension="40px"
             />
           </div>
-        </div>
-        <div className="col">
           <div className="row mt-3">
-            <p style={{ color: "#5a606b", fontWeight: "bolder" }}>
-              PREDICTED RATING
-            </p>
-
-            <StarRatings
-              rating={prediction}
-              starRatedColor={"grey"}
-              isSelectable={false}
-            />
+            <div className="col">
+              <p style={{ color: "#5a606b", fontWeight: "bolder" }}>
+                PREDICTED RATING
+              </p>
+              <div className="row mt-3">
+                <StarRatings
+                  rating={prediction}
+                  starRatedColor={"grey"}
+                  isSelectable={false}
+                  starDimension="40px"
+                />
+              </div>
+            </div>
           </div>
         </div>
       </div>
