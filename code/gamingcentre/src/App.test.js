@@ -11,7 +11,6 @@ import games from "./views/games";
 import { unmountComponentAtNode } from "react-dom";
 import CommentInput from "./components/commentinput";
 
-//App Compne
 it("renders Home without crashing", () => {
   shallow(<Home />);
 });
@@ -23,9 +22,6 @@ it("renders Game without crashing", () => {
 });
 it("renders Games without crashing", () => {
   shallow(<Games />);
-});
-it("renders Game Details without crashing", () => {
-  shallow(<GameDetails />);
 });
 it("renders Game Details without crashing", () => {
   shallow(<GameDetails />);

@@ -9,7 +9,7 @@ const Games = () => {
   const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
-    let isMounted = true; // note this flag denote mount status
+    let isMounted = true;
 
     const getGames = async () => {
       try {
