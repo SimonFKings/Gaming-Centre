@@ -1,4 +1,11 @@
 # Gaming Centre
+![image](https://user-images.githubusercontent.com/32462433/150614999-56a4b173-3068-4b5d-ad08-3a438d4fbf24.png)
+
+![image](https://user-images.githubusercontent.com/32462433/150615048-97060565-8d36-43e4-9edb-1847e4faf01f.png)
+
+![image](https://user-images.githubusercontent.com/32462433/150615031-252ee53b-45ce-4260-97be-6ccf6ebdcaba.png)
+
+
 An application that allows gamers to get the latest news and information about released and upcoming videos games and users will be able to post their content. The app will also have a review section which will take inspiration for the mechanism used by Rotten Tomatoes—allowing both users and critics to review video games. An algorithm will enable the application to give recommendations on upcoming video games that users may be interested in purchasing based on the video games they have previously shown interest in.
 
 Trello: https://trello.com/b/YxK24SeQ/mcomp-project
